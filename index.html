@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Sine Test</title>
+    <style>
+        body {
+            background: rgb(20, 20, 20)
+        }
+
+        canvas {
+            border: .5px solid pink;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas width='600' height='600' id="world"></canvas>
+    <h1 id='test'></h1>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var controls = {
+            a: 70, 
+            f: .005,
+            offset: 300
+        }
+
+        var socket = io();
+        var test = document.querySelector('#test')
+        socket.on('update', function (data) {
+            controls = data;
+        });
+    </script>
+    <script src="./main.js"></script>
+</body>
+
+</html>
