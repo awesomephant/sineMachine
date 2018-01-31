@@ -7,8 +7,18 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Sine Test</title>
     <style>
+        .wrap {
+            display: flex;
+            justify-content: space-between;
+        }
         body {
             background: rgb(20, 20, 20)
+        }
+
+        h2 {
+            font-family: sans-serif;
+            color: white;
+            margin-bottom: .1rem;
         }
 
         canvas {
@@ -18,20 +28,25 @@
 </head>
 
 <body>
-    <canvas width='600' height='600' id="world"></canvas>
-    <h1 id='test'></h1>
+    <div class="wrap">
+        <div>
+            <h2>A</h2>
+            <canvas width='600' height='600' id="world"></canvas>
+        </div>
+        <div>
+            <h2>B</h2>
+            <canvas width='600' height='600' id="world2"></canvas>
+        </div>
+    </div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        var controls = {
-            a: 70, 
-            f: .005,
-            offset: 300
-        }
-
         var socket = io();
         var test = document.querySelector('#test')
-        socket.on('update', function (data) {
-            controls = data;
+        socket.on('update a', function (data) {
+            controlsA = data;
+        });
+        socket.on('update b', function (data) {
+            controlsB = data;
         });
     </script>
     <script src="./main.js"></script>

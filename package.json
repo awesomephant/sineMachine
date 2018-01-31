@@ -6,6 +6,7 @@
     "main": "index.js",
     "dependencies": {
         "express": "*",
+        "johnny-five": "*",
         "socket.io": "*"
     }
 }
