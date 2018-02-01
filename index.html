@@ -48,6 +48,12 @@
         socket.on('update b', function (data) {
             controlsB = data;
         });
+        socket.on('stepper a status', function (data) {
+            stepperStatus.a = data;
+        });
+        socket.on('stepper b status', function (data) {
+            stepperStatus.b = data;
+        });
     </script>
     <script src="./main.js"></script>
 </body>

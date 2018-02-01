@@ -1,15 +1,21 @@
 var c, c2;
 var phi = 0;
+var phi_2 = 0;
 
 // We can "run the graph through x = 0" by incrementing phi. To avoid variable overflow, set phi -> 0 when phi === 100f (100 being arbitrary)
 
 var config = {
     chartLength: 600,
     chartIncrement: 1,
-    speed: .01,
+    speed: .005,
     triangleHarmonics: 5,
     gridLines: 8
 }
+
+var stepperStatus = {
+    a: 0
+}
+
 function cotan(x) { return 1 / Math.tan(x); }
 
 var chooseFunction = function (t, controls) {
@@ -25,23 +31,27 @@ var chooseFunction = function (t, controls) {
 }
 
 var sinT = function (t, controls) {
-    let y = controls.a * Math.sin(2 * Math.PI * controls.f * t + phi) + controls.offset;
+    let _phi = phi + (1 / .005) * controls.offsetX;
+    let y = controls.a * Math.sin(2 * Math.PI * controls.f * t + _phi) + controls.offset;
     return y;
 }
 var sawtoothT = function (t, c) {
+    let _phi = phi + (1 / .005) * c.offsetX;
     let p = 1 / c.f;
-    let y = (-2 * c.a) / Math.PI * Math.atan(cotan((t * Math.PI) / p + phi / 2)) + c.offset;
+    let y = (-2 * c.a) / Math.PI * Math.atan(cotan((t * Math.PI) / p + _phi / 2)) + c.offset;
     return y;
 }
 var triangleT = function (t, c) {
+    let _phi = phi + (1 / .005) * c.offsetX;
     let p = 1 / c.f;
     let a = c.a * .65;
-    let y = a * Math.asin(Math.sin(((2 * Math.PI) / p) * t + phi)) + c.offset;
+    let y = a * Math.asin(Math.sin(((2 * Math.PI) / p) * t + _phi)) + c.offset;
     return y;
 }
 var squareT = function (t, c) {
+    let _phi = phi + (1 / .005) * c.offsetX;
     var sin = function (t) {
-        return Math.sin(2 * Math.PI * c.f * t + phi)
+        return Math.sin(2 * Math.PI * c.f * t + _phi)
     }
 
     let y = c.a * Math.sign(sin(t)) + c.offset;
@@ -65,16 +75,19 @@ var shiftChart = function (controls) {
 }
 
 var controlsA = {
-    a: 70,
+    a: 700,
     f: .005,
     offset: 300,
+    offsetX: 0, // *f
     ft: sinT
 }
 var controlsB = {
     a: 70,
     f: .005,
     offset: 300,
-    ft: sawtoothT
+    offsetX: 1, // *f
+    ft: sawtoothT,
+    id: 'b'
 }
 
 var drawChart = function (c, controls) {
@@ -103,6 +116,20 @@ var drawChart = function (c, controls) {
         c.lineTo(t, y, 2, 2)
     }
     c.stroke();
+    c.fillStyle = 'red';
+    c.fillRect(0, stepperStatus.a, 10,10)
+    c.fillStyle = 'yellow';
+    c.fillRect(0, stepperStatus.b, 10,10)
+
+}
+
+var sendUpdate = function(){
+    let data = {
+        a: chooseFunction(0, controlsA),
+        b: chooseFunction(0, controlsB)
+    }
+    socket.emit('functionStep', data, (data) => {
+    });
 }
 
 function step(timestamp) {
@@ -117,5 +144,7 @@ function step(timestamp) {
 init(function () {
     drawChart(c, controlsA);
     drawChart(c2, controlsB);
+
+    window.setInterval(sendUpdate, 30)
     window.requestAnimationFrame(step);
 })
