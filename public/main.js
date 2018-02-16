@@ -7,7 +7,7 @@ var phi_2 = 0;
 var config = {
     chartLength: 600,
     chartIncrement: 1,
-    speed: .005,
+    speed: .003,
     triangleHarmonics: 5,
     gridLines: 8
 }
@@ -58,18 +58,9 @@ var squareT = function (t, c) {
     return y;
 }
 
-var init = function (cb) {
-    let canvas = document.querySelector('#world')
-    let canvas2 = document.querySelector('#world2')
-    c = canvas.getContext('2d');
-    c2 = canvas2.getContext('2d');
-    cb();
-}
-
 var shiftChart = function (controls) {
     phi += config.speed;
     if (phi >= 2 * Math.PI * (1 / controls.f)) {
-        console.log(phi)
         phi = 0;
     }
 }
@@ -117,16 +108,16 @@ var drawChart = function (c, controls) {
     }
     c.stroke();
     c.fillStyle = 'red';
-    c.fillRect(0, stepperStatus.a, 10,10)
+    c.fillRect(config.chartLength /2 , stepperStatus.a, 10, 10)
     c.fillStyle = 'yellow';
-    c.fillRect(0, stepperStatus.b, 10,10)
+    c.fillRect(config.chartLength / 2, stepperStatus.b, 10, 10)
 
 }
 
-var sendUpdate = function(){
+var sendUpdate = function () {
     let data = {
-        a: chooseFunction(0, controlsA),
-        b: chooseFunction(0, controlsB)
+        a: chooseFunction(config.chartLength / 2, controlsA),
+        b: chooseFunction(config.chartLength / 2, controlsB)
     }
     socket.emit('functionStep', data, (data) => {
     });
@@ -141,10 +132,17 @@ function step(timestamp) {
 }
 
 
-init(function () {
+var init = function () {
+    let canvas = document.querySelector('#world')
+    let canvas2 = document.querySelector('#world2')
+    c = canvas.getContext('2d');
+    c2 = canvas2.getContext('2d');
+
     drawChart(c, controlsA);
     drawChart(c2, controlsB);
 
-    window.setInterval(sendUpdate, 30)
+    window.setInterval(sendUpdate, 40)
     window.requestAnimationFrame(step);
-})
+}
+
+init();

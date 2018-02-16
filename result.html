@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Sine Test</title>
+    <style>
+        .wrap {
+            display: flex;
+            justify-content: space-between;
+        }
+        body {
+            background: rgb(20, 20, 20)
+        }
+
+        h2 {
+            font-family: sans-serif;
+            color: white;
+            margin-bottom: .1rem;
+        }
+
+        #world, #world2 {
+            display: none;
+        }
+
+        canvas {
+           // border: .5px solid pink;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <canvas width='1200' height='800' id="result"></canvas>
+        <div>
+            <canvas width='600' height='600' id="world"></canvas>
+        </div>
+        <div>
+            <canvas width='600' height='600' id="world2"></canvas>
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+        var test = document.querySelector('#test')
+        socket.on('update a', function (data) {
+            controlsA = data;
+        });
+        socket.on('update b', function (data) {
+            controlsB = data;
+        });
+    </script>
+    <script src="./main-sim.js"></script>
+</body>
+
+</html>

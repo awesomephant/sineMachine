@@ -14,20 +14,29 @@ app.use(express.static('public'));
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
-app.get('/sim', function (req, res) {
-    res.sendFile(__dirname + '/sim.html');
-});
-app.get('/controls', function (req, res) {
-    res.sendFile(__dirname + '/controls.html');
-});
-app.get('/result', function (req, res) {
-    res.sendFile(__dirname + '/result.html');
-});
 
 http.listen(3000, function () {
     console.log('listening on *:3000');
 });
 
+var setMicrostep = function (resolution, ms1, ms2) {
+    if (resolution === "half") {
+        ms1.high();
+        ms2.low();
+        console.log("Set microstep resolution to " + resolution);
+    } else if (resolution === "quarter") {
+        ms1.low();
+        ms2.high();
+        console.log("Set microstep resolution to " + resolution);
+    } else if (resolution === "eighth") {
+        ms1.high();
+        ms2.high();
+        console.log("Set microstep resolution to " + resolution);
+    } else {
+        console.log("Invalid microstep resolution: " + resolution);
+        return null;
+    }
+};
 var five = require("johnny-five"),
     board, potentiometer;
 
@@ -39,8 +48,7 @@ var controlsA = {
     offset: 300,
     ft: 'sin',
     name: 'A',
-    offsetX: 0,
-    phi: 0
+    offsetX: 0
 }
 var controlsB = {
     a: 80,
@@ -49,7 +57,6 @@ var controlsB = {
     ft: 'triangle',
     name: 'B',
     offsetX: 1,
-    phi: 0
 }
 var config = {
     maxRPM: 120,
@@ -73,13 +80,71 @@ var queryBinarySwitch = function (s) {
     }
 }
 
+var moveStepperTo = function (stepper, n, cb) {
+    stepper.isMoving = true;
+    let delta = 0;
+    let direction = null;
+    delta = (n - stepper.currentPosition);
+    if (delta > 0) {
+        direction = 1;
+    } else {
+        direction = 0;
+    }
+    let speed = config.maxRPM;
+
+    //    console.log('Moving by ' + delta + ' steps');
+    stepper.rpm(speed).direction(direction).step(Math.abs(delta * 5), function () {
+        stepper.currentPosition += delta;
+        stepper.isMoving = false;
+        io.emit('stepper ' + stepper.max_name + ' status', stepper.currentPosition)
+        cb();
+    });
+}
+
 board.on("ready", function () {
     io.on('connection', function (socket) {
         console.log('A user connected');
         io.emit('update a', controlsA)
         io.emit('update b', controlsB)
+        socket.on('functionStep', (data, fn) => {
+            if (stepperA.isMoving === false) {
+                moveStepperTo(stepperA, data.a, function () { })
+            }
+            if (stepperB.isMoving === false) {
+                moveStepperTo(stepperB, data.b, function () { })
+            }
+        });
     });
-    let pfreq = 50;
+    var ms1 = new five.Pin(13);
+    var ms2 = new five.Pin(12);
+    setMicrostep("quarter", ms1, ms2);
+
+    // Steppers
+    var stepperA = new five.Stepper({
+        type: five.Stepper.TYPE.DRIVER,
+        stepsPerRev: 200,
+        pins: {
+            step: 10,
+            dir: 11
+        }
+    });
+
+    stepperA.currentPosition = 0;
+    stepperA.isMoving = false;
+    stepperA.max_name = 'a';
+    var stepperB = new five.Stepper({
+        type: five.Stepper.TYPE.DRIVER,
+        stepsPerRev: 200,
+        pins: {
+            step: 8,
+            dir: 9
+        }
+    });
+
+    stepperB.currentPosition = 0;
+    stepperB.isMoving = false;
+    stepperB.max_name = 'b'
+    let pfreq = 200;
     p0 = new five.Sensor({
         pin: "A0",
         freq: pfreq
@@ -164,7 +229,7 @@ board.on("ready", function () {
     c0.on("close", function (e) {
         config.aOffsetAxis = 'y';
     });
-
+    
     c1.on("open", function (e) {
         config.bOffsetAxis = 'x';
     });
@@ -176,34 +241,34 @@ board.on("ready", function () {
     // Potentiometers
 
     p0.on("change", function () {
-        controlsA.a = this.fscaleTo(0, 200) - 10;
+        controlsA.a = this.scaleTo(0, 200);
         io.emit('update a', controlsA)
     });
     p1.on("change", function () {
-        //controlsA.f = this.fscaleTo(0, .04);
-        //io.emit('update a', controlsA)
+        controlsA.f = this.scaleTo(0, 400) / 10000;
+        io.emit('update a', controlsA)
     });
     p2.on("change", function () {
         if (config.aOffsetAxis === 'y') {
-            controlsA.offset = this.fscaleTo(0, 600);
+            controlsA.offset = this.scaleTo(00, 500);
         } else {
-            controlsA.offsetX = this.fscaleTo(0, 2);
+            controlsA.offsetX = this.scaleTo(0, 200) / 1000;
         }
         io.emit('update a', controlsA)
     });
     p3.on("change", function () {
-        controlsB.a = this.fscaleTo(0, 200) - 10;
+        controlsB.a = this.scaleTo(0, 200);
         io.emit('update b', controlsB)
     });
     p4.on("change", function () {
-        //controlsB.f = this.fscaleTo(0, .04);
-        //io.emit('update b', controlsB)
+        controlsB.f = this.scaleTo(0, 400) / 10000;
+        io.emit('update b', controlsB)
     });
     p5.on("change", function () {
         if (config.bOffsetAxis === 'y') {
-            controlsB.offset = this.fscaleTo(00, 600);
+            controlsB.offset = this.scaleTo(00, 500);
         } else {
-            controlsB.offsetX = this.fscaleTo(0, 2);
+            controlsB.offsetX = this.scaleTo(0, 200) / 1000;
         }
         io.emit('update b', controlsB)
     });
