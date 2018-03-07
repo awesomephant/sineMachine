@@ -5,11 +5,13 @@ var phi_2 = 0;
 // We can "run the graph through x = 0" by incrementing phi. To avoid variable overflow, set phi -> 0 when phi === 100f (100 being arbitrary)
 
 var config = {
-    chartLength: 600,
+    chartLength: 900,
     chartIncrement: 1,
     speed: .003,
     triangleHarmonics: 5,
-    gridLines: 8
+    gridLines: 8,
+	chartWidth: 900,
+	chartHeight: 900
 }
 
 var stepperStatus = {
@@ -90,19 +92,21 @@ var fillCircle = function(c, x, y, r){
 }
 
 var drawChart = function (c, controls) {
-    c.clearRect(0, 0, 600, 600)
+    c.clearRect(0, 0, config.chartWidth, config.chartHeight)
     // Draw grid
     c.strokeStyle = 'pink'
     c.lineWidth = 1
     for (let i = 0; i < config.gridLines; i++) {
         c.beginPath()
-        c.moveTo(0, 600 / config.gridLines * i)
-        c.lineTo(600, 600 / config.gridLines * i)
+		// Horizontal
+        c.moveTo(0, config.chartHeight / config.gridLines * i)
+        c.lineTo(config.chartHeight, config.chartHeight / config.gridLines * i)
         c.stroke();
-
+		
+		// Vertical
         c.beginPath()
-        c.moveTo(600 / config.gridLines * i, 0)
-        c.lineTo(600 / config.gridLines * i, 600)
+        c.moveTo(config.chartWidth / config.gridLines * i, 0)
+        c.lineTo(config.chartWidth / config.gridLines * i, config.chartHeight)
         c.stroke();
     }
 
