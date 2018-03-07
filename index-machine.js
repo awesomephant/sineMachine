@@ -20,7 +20,11 @@ http.listen(3000, function () {
 });
 
 var setMicrostep = function (resolution, ms1, ms2) {
-    if (resolution === "half") {
+	if (resolution === "full") {
+        ms1.low();
+        ms2.low();
+        console.log("Set microstep resolution to " + resolution);
+    } else if (resolution === "half") {
         ms1.high();
         ms2.low();
         console.log("Set microstep resolution to " + resolution);
@@ -239,7 +243,6 @@ board.on("ready", function () {
 
 
     // Potentiometers
-
     p0.on("change", function () {
         controlsA.a = this.scaleTo(0, 200);
         io.emit('update a', controlsA)
