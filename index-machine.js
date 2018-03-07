@@ -121,7 +121,7 @@ board.on("ready", function () {
     });
     var ms1 = new five.Pin(13);
     var ms2 = new five.Pin(12);
-    setMicrostep("quarter", ms1, ms2);
+    setMicrostep("full", ms1, ms2);
 
     // Steppers
     var stepperA = new five.Stepper({
