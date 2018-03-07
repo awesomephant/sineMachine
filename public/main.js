@@ -81,6 +81,14 @@ var controlsB = {
     id: 'b'
 }
 
+var fillCircle = function(c, x, y, r){
+	c.beginPath();
+	c.arc(x, y, r, 0, 2 * Math.PI, false) 
+	c.fillStyle = 'white';
+    c.fill();
+
+}
+
 var drawChart = function (c, controls) {
     c.clearRect(0, 0, 600, 600)
     // Draw grid
@@ -107,10 +115,8 @@ var drawChart = function (c, controls) {
         c.lineTo(t, y, 2, 2)
     }
     c.stroke();
-    c.fillStyle = 'red';
-    c.fillRect(config.chartLength /2 , stepperStatus.a, 10, 10)
-    c.fillStyle = 'yellow';
-    c.fillRect(config.chartLength / 2, stepperStatus.b, 10, 10)
+    fillCircle(c, config.chartLength /2 , stepperStatus.a, 5)
+    fillCircle(c, config.chartLength / 2, stepperStatus.b, 5)
 
 }
 
