@@ -148,7 +148,7 @@ board.on("ready", function () {
     stepperB.currentPosition = 0;
     stepperB.isMoving = false;
     stepperB.max_name = 'b'
-    let pfreq = 200;
+    let pfreq = 50;
     p0 = new five.Sensor({
         pin: "A0",
         freq: pfreq
