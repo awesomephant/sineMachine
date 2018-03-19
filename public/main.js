@@ -5,13 +5,13 @@ var phi_2 = 0;
 // We can "run the graph through x = 0" by incrementing phi. To avoid variable overflow, set phi -> 0 when phi === 100f (100 being arbitrary)
 
 var config = {
-    chartLength: 900,
+    chartLength: 600,
     chartIncrement: 1,
     speed: .003,
     triangleHarmonics: 5,
     gridLines: 8,
-	chartWidth: 900,
-	chartHeight: 900
+	chartWidth: 600,
+	chartHeight: 600
 }
 
 var stepperStatus = {
