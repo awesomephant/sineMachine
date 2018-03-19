@@ -167,40 +167,40 @@
         var config = {
             chartLength: 800,
             chartIncrement: 2,
-            speed: 2,
+            speed: .2,
             triangleHarmonics: 5,
             gridLines: 10,
-            timestep: 500,
-            chartScale: 2
+            timestep: 30,
+            chartScale: 2,
         }
         const metaControls = {
             a: {
-                delta_offset: .5,
+                delta_offset: -.001,
                 delta_offsetX: 0.000,
-                delta_a: 1,
+                delta_a: 0,
                 delta_f: 0
             },
             b: {
-                delta_offset: .13,
-                delta_offsetX: -0.02,
-                delta_a: -.0015,
+                delta_offset: -.001,
+                delta_offsetX: 0,
+                delta_a: 0,
                 delta_f: 0
             }
         }
         var controlsA = {
-            a: 10,
+            a: 100,
             f: .005,
-            offset: 160,
-            offsetX: 0, // *f
+            offset: 0,
+            offsetX: .04, // *f
             ft: 'sin',
             id: 'a'
         }
         var controlsB = {
             a: 120,
             f: .01,
-            offset: 250,
+            offset: 0,
             offsetX: .1, // *f
-            ft: 'triangle',
+            ft: 'sin',
             id: 'b'
         }
 

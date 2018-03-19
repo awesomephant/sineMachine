@@ -65,7 +65,8 @@ var controlsB = {
 var config = {
     maxRPM: 120,
     aOffsetAxis: 'y',
-    bOffsetAxis: 'y'
+    bOffsetAxis: 'y',
+    drawingScale: 2
 }
 var moveStepperTo = function (stepper, n, cb) {
     stepper.isMoving = true;
@@ -92,12 +93,11 @@ board.on("ready", function () {
     io.on('connection', function (socket) {
         console.log('Connection established');
         socket.on('functionStep', (data, fn) => {
-            console.log('Update received')
             if (stepperA.isMoving === false) {
-                moveStepperTo(stepperA, data.a, function () { })
+                moveStepperTo(stepperA, Math.round(data.a), function () { })
             }
             if (stepperB.isMoving === false) {
-                moveStepperTo(stepperB, data.b, function () { })
+                moveStepperTo(stepperB, Math.round(data.b), function () { })
             }
         });
     });
@@ -118,6 +118,7 @@ board.on("ready", function () {
     stepperA.currentPosition = 0;
     stepperA.isMoving = false;
     stepperA.max_name = 'a';
+
     var stepperB = new five.Stepper({
         type: five.Stepper.TYPE.DRIVER,
         stepsPerRev: 200,
