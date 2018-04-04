@@ -104,6 +104,10 @@
                     <span class="control-title">Val</span>
                     <span class="control-value" id='a_value'></span>
                 </li>
+                <li class="control">
+                    <span class="control-title">Derivative</span>
+                    <span class="control-value" id='a_derivative'></span>
+                </li>
             </ul>
 
         </section>
@@ -136,6 +140,11 @@
                     <span class="control-title">Val</span>
                     <span class="control-value" id='b_value'></span>
                 </li>
+                <li class="control">
+                    <span class="control-title">Derivative</span>
+                    <span class="control-value" id='b_derivative'></span>
+                </li>
+
             </ul>
         </section>
     </main>
@@ -170,33 +179,33 @@
             speed: .2,
             triangleHarmonics: 5,
             gridLines: 10,
-            timestep: 30,
+            timestep: 20,
             chartScale: 2,
         }
         const metaControls = {
             a: {
-                delta_offset: -.001,
-                delta_offsetX: 0.000,
+                delta_offset: -.0002,
+                delta_offsetX: 0.000001,
                 delta_a: 0,
                 delta_f: 0
             },
             b: {
-                delta_offset: -.001,
+                delta_offset: -.0002,
                 delta_offsetX: 0,
                 delta_a: 0,
                 delta_f: 0
             }
         }
         var controlsA = {
-            a: 100,
-            f: .005,
+            a: 50,
+            f: .01,
             offset: 0,
             offsetX: .04, // *f
             ft: 'sin',
             id: 'a'
         }
         var controlsB = {
-            a: 120,
+            a: 50,
             f: .01,
             offset: 0,
             offsetX: .1, // *f
@@ -222,6 +231,12 @@
             let y = controls.a * Math.sin(2 * Math.PI * controls.f * (t + _phi)) + controls.offset;
             return y;
         }
+
+		var derivativeSinT = function(t, controls){
+            let _phi = phi + (1 / .005) * controls.offsetX;
+			let y = 2 * Math.PI * controls.a * controls.f * Math.cos(2 * Math.PI * controls.f * (t + _phi))
+			return y
+		}
         var sawtoothT = function (t, c) {
             let _phi = phi + (1 / .005) * c.offsetX;
             let p = 1 / c.f;
@@ -255,12 +270,20 @@
         var sendUpdate = function () {
             let data = {
                 a: chooseFunction(config.chartLength / 2, controlsA),
-                b: chooseFunction(config.chartLength / 2, controlsB)
+                b: chooseFunction(config.chartLength / 2, controlsB),
+				speedA : derivativeSinT(config.chartLength / 2, controlsA),
+				speedB : derivativeSinT(config.chartLength / 2, controlsB)	
             }
             let elA = document.getElementById('a_value')
             let elB = document.getElementById('b_value')
             elA.innerHTML = data.a.toFixed(2);
             elB.innerHTML = data.b.toFixed(2);
+
+            let elSA = document.getElementById('a_derivative')
+            let elSB = document.getElementById('b_derivative')
+            elSA.innerHTML = data.speedA.toFixed(2);
+            elSB.innerHTML = data.speedB.toFixed(2);
+
             socket.emit('functionStep', data, (data) => {
             });
         }

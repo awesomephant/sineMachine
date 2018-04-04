@@ -15,8 +15,8 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + '/largescale-control.html');
 });
 
-http.listen(3000, function () {
-    console.log('listening on *:3000');
+http.listen(3001, function () {
+    console.log('listening on *:3001');
 });
 
 var setMicrostep = function (resolution, ms1, ms2) {
@@ -66,7 +66,8 @@ var config = {
     maxRPM: 120,
     aOffsetAxis: 'y',
     bOffsetAxis: 'y',
-    drawingScale: 2
+    drawingScale: 2,
+	useDerivative: false
 }
 var moveStepperTo = function (stepper, n, cb) {
     stepper.isMoving = true;
@@ -78,7 +79,8 @@ var moveStepperTo = function (stepper, n, cb) {
     } else {
         direction = 0;
     }
-    let speed = config.maxRPM;
+//    let speed = config.maxRPM;
+	let speed = Math.abs(10 * delta)
 
     //    console.log('Moving by ' + delta + ' steps');
     stepper.rpm(speed).direction(direction).step(Math.abs(delta * 5), function () {
@@ -89,16 +91,49 @@ var moveStepperTo = function (stepper, n, cb) {
     });
 }
 
+var setStepperSpeed = function (stepper, s, cb) {
+    stepper.isMoving = true;    
+	let speed = s * 20; // + 5 so it doesnt get stuck if speed = 5
+    let direction = null;
+    if (speed > 0) {
+		direction = 1
+		speed += 2    
+	} else {
+        direction = 0;
+		speed -= 2;
+    }
+
+//    console.log('Setting speed to ' + speed);
+
+    stepper.rpm(Math.abs(speed)).direction(direction).step(5, function () { //  20 steps is arbitrary
+        stepper.currentPosition += 20 * direction;
+        stepper.isMoving = false;
+        io.emit('stepper ' + stepper.max_name + ' status', stepper.currentPosition)
+        cb();
+    });
+}
+
+
 board.on("ready", function () {
     io.on('connection', function (socket) {
         console.log('Connection established');
         socket.on('functionStep', (data, fn) => {
-            if (stepperA.isMoving === false) {
-                moveStepperTo(stepperA, Math.round(data.a), function () { })
-            }
-            if (stepperB.isMoving === false) {
-                moveStepperTo(stepperB, Math.round(data.b), function () { })
-            }
+			if (config.useDerivative){
+        	    if (stepperA.isMoving === false) {
+       	       		setStepperSpeed(stepperA, data.speedA, function () { })
+        	    }
+        	    if (stepperB.isMoving === false) {
+       	        	setStepperSpeed(stepperB, data.speedB, function () { })		
+        	    }
+
+			} else {
+        	    if (stepperA.isMoving === false) {
+        	        moveStepperTo(stepperA, Math.round(data.a), function () { })
+        	    }
+        	    if (stepperB.isMoving === false) {
+        	        moveStepperTo(stepperB, Math.round(data.b), function () { })
+        	    }
+			}
         });
     });
     var ms1 = new five.Pin(13);
