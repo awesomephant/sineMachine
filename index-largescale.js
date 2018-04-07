@@ -80,7 +80,10 @@ var moveStepperTo = function (stepper, n, cb) {
         direction = 0;
     }
 //    let speed = config.maxRPM;
-	let speed = Math.abs(10 * delta)
+    let speed = Math.abs(10 * delta)
+    if (speed >= config.maxRPM){
+        speed = config.maxRPM
+    }
 
     //    console.log('Moving by ' + delta + ' steps');
     stepper.rpm(speed).direction(direction).step(Math.abs(delta * 5), function () {
