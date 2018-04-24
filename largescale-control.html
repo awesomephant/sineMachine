@@ -104,10 +104,7 @@
                     <span class="control-title">Val</span>
                     <span class="control-value" id='a_value'></span>
                 </li>
-                <li class="control">
-                    <span class="control-title">Derivative</span>
-                    <span class="control-value" id='a_derivative'></span>
-                </li>
+           
             </ul>
 
         </section>
@@ -140,11 +137,7 @@
                     <span class="control-title">Val</span>
                     <span class="control-value" id='b_value'></span>
                 </li>
-                <li class="control">
-                    <span class="control-title">Derivative</span>
-                    <span class="control-value" id='b_derivative'></span>
-                </li>
-
+            
             </ul>
         </section>
     </main>
@@ -279,11 +272,6 @@
             elA.innerHTML = data.a.toFixed(2);
             elB.innerHTML = data.b.toFixed(2);
 
-            let elSA = document.getElementById('a_derivative')
-            let elSB = document.getElementById('b_derivative')
-            elSA.innerHTML = data.speedA.toFixed(2);
-            elSB.innerHTML = data.speedB.toFixed(2);
-
             socket.emit('functionStep', data, (data) => {
             });
         }
@@ -314,7 +302,7 @@
             c.beginPath()
             c.moveTo(-6, chooseFunction(0, controls))
             for (let t = 0; t < config.chartLength * config.chartScale; t += config.chartIncrement) {
-                let y = chooseFunction(t, controls) / config.chartScale;
+                let y = (chooseFunction(t, controls) / config.chartScale) + controls.offset + 300;
                 c.lineTo(t / config.chartScale, y, 2, 2)
             }
             c.stroke();
@@ -336,7 +324,8 @@
         const updateDisplays = function (controlObj) {
             for (let control in controlObj) {
                 let el = document.getElementById(controlObj.id + '_' + control)
-                if (el && isNaN(controlObj[control])) {
+		console.log(el);	                
+		if (el && isNaN(controlObj[control])) {
                     el.innerHTML = controlObj[control]
                 } else if (!isNaN(controlObj[control])) {
                     el.innerHTML = controlObj[control].toFixed(3) + '<em>' + metaControls[controlObj.id]['delta_' + control].toExponential() + '</em>';

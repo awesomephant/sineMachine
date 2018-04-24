@@ -199,7 +199,7 @@ var drawChart = function (c, controls) {
     c.beginPath()
     c.moveTo(0, chooseFunction(0, controls))
     for (let t = 0; t < config.chartLength * 10; t += config.chartIncrement) {
-        let y = chooseFunction(t, controls) / 10;
+        let y = (chooseFunction(t, controls) / 10) + controls.offset;
         c.lineTo(t / 10, y, 2, 2)
     }
     c.stroke();
