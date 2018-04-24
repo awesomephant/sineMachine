@@ -283,7 +283,7 @@
             c.strokeStyle = 'pink'
             c.fillStyle = 'blue'
             c.lineWidth = 2
-	let offset = controls.offset / config.chartScale;
+	let offset = 0;
 
             for (let i = 1; i < config.gridLines; i++) {
 		// Lines from left to right                
@@ -299,7 +299,7 @@
             }
             
             c.strokeStyle = 'white'
-            c.lineWidth = 6
+            c.lineWidth = 10
             c.beginPath()
             c.moveTo(-6, chooseFunction(0, controls))
             for (let t = 0; t < config.chartLength * config.chartScale; t += config.chartIncrement) {
