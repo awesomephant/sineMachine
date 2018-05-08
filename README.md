@@ -25,3 +25,7 @@ node index-largescale-sim.js
 ```
 
 Edit `largescale-control.html` to adjust delta values.
+
+
+## Arbitrary Drawings
+Run `node machine-arbitrary.js`
