@@ -20,8 +20,8 @@
         }
 
         body {
-            background: rgb(250, 250, 250);
-            color: black;
+            background: rgb(5, 5, 4);
+            color: white;
             font-family: sans-serif;
         }
 
@@ -67,9 +67,8 @@
         }
 
         canvas {
-            border: .5px solid black;
+            border: .5px solid pink;
             margin-bottom: 1rem;
-            width: 500px;
         }
     </style>
 </head>
@@ -78,7 +77,7 @@
     <main class="page-content">
         <section class='curves'>
             <h2>A</h2>
-            <canvas width='800' height='600' id="world"></canvas>
+            <canvas width='900' height='700' id="world"></canvas>
             <ul class="controls-list">
                 <li class="control">
                     <span class="control-title">Freq</span>
@@ -104,16 +103,13 @@
                     <span class="control-title">Val</span>
                     <span class="control-value" id='a_value'></span>
                 </li>
-                <li class="control">
-                    <span class="control-title">Derivative</span>
-                    <span class="control-value" id='a_derivative'></span>
-                </li>
+           
             </ul>
 
         </section>
         <section class="curves">
             <h2>B</h2>
-            <canvas width='800' height='600' id="world2"></canvas>
+            <canvas width='900' height='700' id="world2"></canvas>
 
             <ul class="controls-list">
                 <li class="control">
@@ -140,11 +136,7 @@
                     <span class="control-title">Val</span>
                     <span class="control-value" id='b_value'></span>
                 </li>
-                <li class="control">
-                    <span class="control-title">Derivative</span>
-                    <span class="control-value" id='b_derivative'></span>
-                </li>
-
+            
             </ul>
         </section>
     </main>
@@ -174,7 +166,7 @@
         var phi_2 = 0;
 
         var config = {
-            chartLength: 800,
+            chartLength: 1200,
             chartIncrement: 2,
             speed: .2,
             triangleHarmonics: 5,
@@ -184,7 +176,7 @@
         }
         const metaControls = {
             a: {
-                delta_offset: -.0002,
+                delta_offset: -.2,
                 delta_offsetX: 0.000001,
                 delta_a: 0,
                 delta_f: 0
@@ -197,7 +189,7 @@
             }
         }
         var controlsA = {
-            a: 50,
+            a: 0,
             f: .01,
             offset: 0,
             offsetX: .04, // *f
@@ -205,7 +197,7 @@
             id: 'a'
         }
         var controlsB = {
-            a: 50,
+            a: 0,
             f: .01,
             offset: 0,
             offsetX: .1, // *f
@@ -279,42 +271,39 @@
             elA.innerHTML = data.a.toFixed(2);
             elB.innerHTML = data.b.toFixed(2);
 
-            let elSA = document.getElementById('a_derivative')
-            let elSB = document.getElementById('b_derivative')
-            elSA.innerHTML = data.speedA.toFixed(2);
-            elSB.innerHTML = data.speedB.toFixed(2);
-
             socket.emit('functionStep', data, (data) => {
             });
         }
 
 
         var drawChart = function (c, controls) {
-            let size = 800;
+            let size = 900;
             c.clearRect(0, 0, config.chartLength, size)
             // Draw grid
-            c.strokeStyle = 'black'
+            c.strokeStyle = 'pink'
             c.fillStyle = 'blue'
-            c.lineWidth = 1
+            c.lineWidth = 2
+	let offset = 0;
+
             for (let i = 1; i < config.gridLines; i++) {
-                c.beginPath()
-                c.moveTo(0, size / config.gridLines * i)
-                c.lineTo(size, size / config.gridLines * i)
+		// Lines from left to right                
+		c.beginPath()
+                c.moveTo(0, size / config.gridLines * i - offset)
+                c.lineTo(size, size / config.gridLines * i - offset)
                 c.stroke();
-                //                c.fillText(size / config.gridLines * i, 0, size / config.gridLines * i)
-                
+                // Lines from top to bottom
                 c.beginPath()
                 c.moveTo(size / config.gridLines * i, 0)
                 c.lineTo(size / config.gridLines * i, size)
                 c.stroke();
             }
             
-            c.strokeStyle = 'black'
-            c.lineWidth = 3
+            c.strokeStyle = 'white'
+            c.lineWidth = 10
             c.beginPath()
             c.moveTo(-6, chooseFunction(0, controls))
             for (let t = 0; t < config.chartLength * config.chartScale; t += config.chartIncrement) {
-                let y = chooseFunction(t, controls) / config.chartScale;
+                let y = (chooseFunction(t, controls) / config.chartScale) + (-controls.offset / config.chartScale) + 300;
                 c.lineTo(t / config.chartScale, y, 2, 2)
             }
             c.stroke();
@@ -336,7 +325,8 @@
         const updateDisplays = function (controlObj) {
             for (let control in controlObj) {
                 let el = document.getElementById(controlObj.id + '_' + control)
-                if (el && isNaN(controlObj[control])) {
+	              
+		if (el && isNaN(controlObj[control])) {
                     el.innerHTML = controlObj[control]
                 } else if (!isNaN(controlObj[control])) {
                     el.innerHTML = controlObj[control].toFixed(3) + '<em>' + metaControls[controlObj.id]['delta_' + control].toExponential() + '</em>';
