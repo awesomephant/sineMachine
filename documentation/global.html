@@ -112,7 +112,7 @@
 
 
 <div class="description">
-    Converts a length in mm to a number of steps, given the radius of the output wheels and the microstepping resolution
+    Converts a length in mm to a number of steps, given the diameter of the output wheels and the microstepping resolution
 </div>
 
 
@@ -205,7 +205,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="machine-arbitrary.js.html">machine-arbitrary.js</a>, <a href="machine-arbitrary.js.html#line47">line 47</a>
+        <a href="machine-arbitrary.js.html">machine-arbitrary.js</a>, <a href="machine-arbitrary.js.html#line55">line 55</a>
     </li></ul></dd>
     
 
@@ -385,7 +385,165 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="machine-arbitrary.js.html">machine-arbitrary.js</a>, <a href="machine-arbitrary.js.html#line102">line 102</a>
+        <a href="machine-arbitrary.js.html">machine-arbitrary.js</a>, <a href="machine-arbitrary.js.html#line118">line 118</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="moveStepper"><span class="type-signature"></span>moveStepper<span class="signature">(steps, callback)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Moves a stepper by a given number of steps. Use <a href="global.html#lengthToSteps">lengthToSteps</a> to convert mm to steps.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>steps</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Steps to move (positive or negative).</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Called when the move is complete.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="move.js.html">move.js</a>, <a href="move.js.html#line53">line 53</a>
     </li></ul></dd>
     
 
@@ -589,7 +747,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="machine-arbitrary.js.html">machine-arbitrary.js</a>, <a href="machine-arbitrary.js.html#line63">line 63</a>
+        <a href="machine-arbitrary.js.html">machine-arbitrary.js</a>, <a href="machine-arbitrary.js.html#line81">line 81</a>
     </li></ul></dd>
     
 
@@ -601,7 +759,7 @@
     <dt class="tag-todo">To Do:</dt>
     <dd class="tag-todo">
         <ul>
-            <li>Add callback response</li>
+            <li>Set stepper speeds so they arrive at the same time</li>
         </ul>
     </dd>
     
@@ -621,11 +779,6 @@
 
 
 
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>moveToCoordinates({123,456});</code></pre>
 
 
 
@@ -782,7 +935,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="machine-arbitrary.js.html">machine-arbitrary.js</a>, <a href="machine-arbitrary.js.html#line123">line 123</a>
+        <a href="machine-arbitrary.js.html">machine-arbitrary.js</a>, <a href="machine-arbitrary.js.html#line143">line 143</a>
     </li></ul></dd>
     
 
@@ -939,7 +1092,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="machine-arbitrary.js.html">machine-arbitrary.js</a>, <a href="machine-arbitrary.js.html#line134">line 134</a>
+        <a href="machine-arbitrary.js.html">machine-arbitrary.js</a>, <a href="machine-arbitrary.js.html#line154">line 154</a>
     </li></ul></dd>
     
 
@@ -1145,6 +1298,340 @@
 
 
         
+            
+
+    
+
+    
+    <h4 class="name" id="setMicrostep"><span class="type-signature"></span>setMicrostep<span class="signature">(resolution, ms1, ms2)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>resolution</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ms1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Stepper</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ms2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Stepper</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="move.js.html">move.js</a>, <a href="move.js.html#line7">line 7</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="stepsToLength"><span class="type-signature"></span>stepsToLength<span class="signature">(Steps)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Converts a number of steps to mm, given the diameter of the output wheels and the microstepping resolution
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>Steps</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Float</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="machine-arbitrary.js.html">machine-arbitrary.js</a>, <a href="machine-arbitrary.js.html#line66">line 66</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Length in mm
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
     
 
     
@@ -1160,13 +1647,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#lengthToSteps">lengthToSteps</a></li><li><a href="global.html#moveStepper">moveStepper</a></li><li><a href="global.html#moveToCoordinates">moveToCoordinates</a></li><li><a href="global.html#pointToWireLength">pointToWireLength</a></li><li><a href="global.html#run">run</a></li><li><a href="global.html#setMicrostep">setMicrostep</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#lengthToSteps">lengthToSteps</a></li><li><a href="global.html#moveStepper">moveStepper</a></li><li><a href="global.html#moveToCoordinates">moveToCoordinates</a></li><li><a href="global.html#pointToWireLength">pointToWireLength</a></li><li><a href="global.html#run">run</a></li><li><a href="global.html#setMicrostep">setMicrostep</a></li><li><a href="global.html#stepsToLength">stepsToLength</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue May 08 2018 22:44:50 GMT+0100 (GMT Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat May 12 2018 16:18:00 GMT+0100 (GMT Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>
