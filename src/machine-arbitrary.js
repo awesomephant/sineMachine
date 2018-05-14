@@ -41,7 +41,7 @@ board = new five.Board();
 var config = {
     maxRPM: 50,
     scale: 1,
-    waitTime: 200,
+    waitTime: 500,
     stepperDistance: 2655,
     stepperResolution: 200, // Full steps per revolution
     microstepResolution: 1,
