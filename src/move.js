@@ -97,6 +97,6 @@ board.on("ready", function () {
     stepperB.isMoving = false;
     stepperB.max_name = 'b'
 
-    moveStepper(stepperA, -50, function(){})
-    moveStepper(stepperB, 50, function(){})
+    moveStepper(stepperA, -5, function(){})
+    moveStepper(stepperB, -5, function(){})
 });

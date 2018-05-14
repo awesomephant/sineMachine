@@ -41,10 +41,19 @@ board = new five.Board();
 var config = {
     maxRPM: 50,
     scale: 1,
-    stepperDistance: 2400,
+    waitTime: 200,
+    stepperDistance: 2655,
     stepperResolution: 200, // Full steps per revolution
     microstepResolution: 1,
-    wheelDiameter: 3 //Stepper wheel radius in mm
+    wheelDiameter: 3, //Stepper wheel radius in mm
+    origin: {
+        x: 1327,
+        y: 1000
+    },
+    offset: {
+        x: 600,
+        y: 600
+    }
 }
 
 /**
@@ -57,7 +66,31 @@ const lengthToSteps = function (length) {
     let steps = length / (c / (config.stepperResolution * config.microstepResolution))
     return steps;
 }
-
+const calculateRPM = function (deltaX, deltaY) {
+    // calculate rel pen velocity
+    let dx = Math.abs(deltaX);
+    let dy = Math.abs(deltaY);
+    let ratio = 1;
+    let rpm = { a: config.maxRPM, b: config.maxRPM };
+    if (dx > dy) {
+        ratio = dy / dx;
+        rpm.b = config.maxRPM * ratio;
+        rpm.a = config.maxRPM;
+    } else if (dy > dx) {
+        ratio = dx / dy;
+        rpm.a = config.maxRPM * ratio;
+        rpm.b = config.maxRPM;
+    }
+    if (dx === 0) {
+        rpm.a = 0;
+        rpm.b = config.maxRPM;
+    } else if (dy === 0) {
+        rpm.a = config.maxRPM;
+        rpm.b = 0;
+    }
+    console.log('RPM: A=' + rpm.a + ' B=' + rpm.b)
+    return rpm;
+}
 /**
  * Converts a number of steps to mm, given the diameter of the output wheels and the microstepping resolution
  * @param {Float} Steps
@@ -82,6 +115,7 @@ const moveToCoordinates = function (point, callback) {
     let targetLength = pointToWireLength(point)
     let currentLength = [stepsToLength(stepperA.currentPosition), stepsToLength(stepperB.currentPosition)]
     let deltaLengths = [targetLength.a - currentLength[0], targetLength.b - currentLength[1]]
+    let rpm = calculateRPM(deltaLengths[0], deltaLengths[1])
 
     let deltaSteps = [lengthToSteps(deltaLengths[0]), lengthToSteps(deltaLengths[1])];
     console.log('Current Length: ' + currentLength[0] + ' / ' + currentLength[1])
@@ -91,14 +125,14 @@ const moveToCoordinates = function (point, callback) {
     var remainingSteppers = 2;
     for (let i = 0; i < 2; i++) {
         if (i === 0) {
-            moveStepper(stepperA, deltaSteps[0], function () {
+            moveStepper(stepperA, deltaSteps[0], rpm.a, function () {
                 remainingSteppers--;
                 if (remainingSteppers === 0) {
                     callback();
                 }
             });
         } else if (i === 1) {
-            moveStepper(stepperB, deltaSteps[1], function () {
+            moveStepper(stepperB, deltaSteps[1], rpm.b, function () {
                 remainingSteppers--;
                 if (remainingSteppers === 0) {
                     callback();
@@ -115,11 +149,11 @@ const moveToCoordinates = function (point, callback) {
  * @param {number} steps - Steps to move (positive or negative).
  * @param {function} callback - Called when the move is complete.
  */
-const moveStepper = function (stepper, steps, cb) {
+const moveStepper = function (stepper, steps, rpm, cb) {
     stepper.isMoving = true;
     steps = Math.round(steps);
     let direction = null;
-    let speed = config.maxRPM;
+    let speed = rpm;
     if (steps < 0) {
         direction = 0
     } else {
@@ -161,7 +195,7 @@ const run = function () {
     console.log(point)
     moveToCoordinates(point, function () {
         currentInst++;
-        setTimeout(run, 1000); //wait to reduce vibration
+        setTimeout(run, config.waitTime); //wait to reduce vibration
     });
 };
 
@@ -194,18 +228,19 @@ board.on("ready", function () {
     stepperB.max_name = 'b'
 
     // Set the origin to wherever we are at the moment
-    let origin = pointToWireLength({x : 1000, y : 1300})
+    let origin = pointToWireLength(config.origin)
     stepperA.currentPosition = lengthToSteps(origin.a);
     stepperB.currentPosition = lengthToSteps(origin.b);
-    
+
     for (let i = 0; i < _instructions.length; i++) {
         if (_instructions[i].length === 2) {
             // if its not a point array, remove it
-            let ins = [_instructions[i][0] + 1000, _instructions[i][1] + 1300]
+            let ins = [_instructions[i][0] + config.offset.x, _instructions[i][1] +  config.offset.y]
             instructions.push(ins);
         }
     }
+    instructions.push([config.origin.x, config.origin.y])
 
-    
+
     run();
 });
