@@ -8,7 +8,7 @@ const express = require('express')
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-
+var stepperA, stepperB;
 app.use(express.static('public'));
 
 app.get('/', function (req, res) {
@@ -71,6 +71,8 @@ var config = {
     maxRPM: 120,
     aOffsetAxis: 'y',
     bOffsetAxis: 'y',
+	maxY: 200,
+	minY: -200,
     drawingScale: 2,
     useDerivative: false,
     artBoard: {
@@ -80,10 +82,9 @@ var config = {
         y: 10
     },
     wheelDiameter: 3, //Stepper wheel radius in mm
-    origin: {
-        x: 0,
-        y: 0
-    },
+	stepperAPos: {x: 0, y: 0},
+	stepperBPos: {x: 2620, y: 0}
+	
 }
 
 const intersectCircles = function (x1, y1, r1, x2, y2, r2) {
@@ -143,18 +144,6 @@ var moveStepperTo = function (stepper, n, cb) {
     if (speed >= config.maxRPM){
         speed = config.maxRPM
     }
-    let inters = intersectCircles(config.stepperAPos.x, config.stepperAPos.y, stepsToLength(stepperA.currentPosition), config.stepperBPos.x, config.stepperBPos.y, stepsToLength(stepperB.currentPosition));
-    
-    status.currentCoordinates = [inters[1]]
-
-    if (status.currentCoordinates[0] < config.artBoard.x ||
-        status.currentCoordinates[0] > config.artBoard.x + config.artBoard.width ||
-        status.currentCoordinates[1] < config.artBoard.y ||
-        status.currentCoordinates[1] > config.artBoard.y + config.artBoard.height
-    ) {
-        console.log('Outside the limits')
-    }
-    console.log('Current Position' + status.currentPosition)
     stepper.rpm(speed).direction(direction).step(Math.abs(delta * 5), function () {
         stepper.currentPosition += delta;
         stepper.isMoving = false;
@@ -215,7 +204,7 @@ board.on("ready", function () {
     setMicrostep("full", ms1, ms2);
 
     // Steppers
-    var stepperA = new five.Stepper({
+    stepperA = new five.Stepper({
         type: five.Stepper.TYPE.DRIVER,
         stepsPerRev: 200,
         pins: {
@@ -228,7 +217,7 @@ board.on("ready", function () {
     stepperA.isMoving = false;
     stepperA.max_name = 'a';
 
-    var stepperB = new five.Stepper({
+    stepperB = new five.Stepper({
         type: five.Stepper.TYPE.DRIVER,
         stepsPerRev: 200,
         pins: {

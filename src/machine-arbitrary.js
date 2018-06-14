@@ -42,17 +42,17 @@ var config = {
     maxRPM: 50,
     scale: 1,
     waitTime: 500,
-    stepperDistance: 2655,
+    stepperDistance: 2620,
     stepperResolution: 200, // Full steps per revolution
     microstepResolution: 1,
     wheelDiameter: 3, //Stepper wheel radius in mm
     origin: {
-        x: 1327,
-        y: 1000
+        x: 1350,
+        y: 1170
     },
     offset: {
-        x: 600,
-        y: 600
+        x: 100,
+        y: 100
     }
 }
 
