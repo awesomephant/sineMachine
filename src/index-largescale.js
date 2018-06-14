@@ -62,6 +62,11 @@ var controlsB = {
     name: 'B',
     offsetX: 1,
 }
+
+// Use this to set the origin in mm
+var status = {
+    currentCoordinates: [1300, 1400]
+}
 var config = {
     maxRPM: 120,
     aOffsetAxis: 'y',
@@ -69,7 +74,7 @@ var config = {
     drawingScale: 2,
     useDerivative: false,
     artBoard: {
-        width: 200,  //mm
+        width: 200,  //mm (These can be negative so the origin is in the middle of the artboard)
         height: 200,
         x: 10,
         y: 10
@@ -140,16 +145,16 @@ var moveStepperTo = function (stepper, n, cb) {
     }
     let inters = intersectCircles(config.stepperAPos.x, config.stepperAPos.y, stepsToLength(stepperA.currentPosition), config.stepperBPos.x, config.stepperBPos.y, stepsToLength(stepperB.currentPosition));
     
-    let currentCoordinates = [inters[1]]
+    status.currentCoordinates = [inters[1]]
 
-    if (currentCoordinates[0] < config.artBoard.x ||
-        currentCoordinates[0] > config.artBoard.x + config.artBoard.width ||
-        currentCoordinates[1] < config.artBoard.y ||
-        currentCoordinates[1] > config.artBoard.y + config.artBoard.height
+    if (status.currentCoordinates[0] < config.artBoard.x ||
+        status.currentCoordinates[0] > config.artBoard.x + config.artBoard.width ||
+        status.currentCoordinates[1] < config.artBoard.y ||
+        status.currentCoordinates[1] > config.artBoard.y + config.artBoard.height
     ) {
         console.log('Outside the limits')
     }
-
+    console.log('Current Position' + status.currentPosition)
     stepper.rpm(speed).direction(direction).step(Math.abs(delta * 5), function () {
         stepper.currentPosition += delta;
         stepper.isMoving = false;
@@ -182,6 +187,8 @@ var setStepperSpeed = function (stepper, s, cb) {
 
 
 board.on("ready", function () {
+    config.artBoard.x += status.currentCoordinates[0];
+    config.artBoard.y += status.currentCoordinates[1];
     io.on('connection', function (socket) {
         console.log('Connection established');
         socket.on('functionStep', (data, fn) => {
