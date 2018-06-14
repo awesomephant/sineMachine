@@ -67,7 +67,7 @@
         }
 
         canvas {
-            border: .5px solid pink;
+            border: .5px solid gray;
             margin-bottom: 1rem;
         }
     </style>
@@ -77,7 +77,7 @@
     <main class="page-content">
         <section class='curves'>
             <h2>A</h2>
-            <canvas width='900' height='700' id="world"></canvas>
+            <canvas width='930' height='830' id="world"></canvas>
             <ul class="controls-list">
                 <li class="control">
                     <span class="control-title">Freq</span>
@@ -109,7 +109,7 @@
         </section>
         <section class="curves">
             <h2>B</h2>
-            <canvas width='900' height='700' id="world2"></canvas>
+            <canvas width='930' height='830' id="world2"></canvas>
 
             <ul class="controls-list">
                 <li class="control">
@@ -176,13 +176,13 @@
         }
         const metaControls = {
             a: {
-                delta_offset: -.2,
+                delta_offset: 0,
                 delta_offsetX: 0.000001,
                 delta_a: 0,
                 delta_f: 0
             },
             b: {
-                delta_offset: -.0002,
+                delta_offset: 0,
                 delta_offsetX: 0,
                 delta_a: 0,
                 delta_f: 0
@@ -277,10 +277,10 @@
 
 
         var drawChart = function (c, controls) {
-            let size = 900;
+            let size = 930;
             c.clearRect(0, 0, config.chartLength, size)
             // Draw grid
-            c.strokeStyle = 'pink'
+            c.strokeStyle = 'gray'
             c.fillStyle = 'blue'
             c.lineWidth = 2
 	let offset = 0;
@@ -299,7 +299,7 @@
             }
             
             c.strokeStyle = 'white'
-            c.lineWidth = 10
+            c.lineWidth = 5
             c.beginPath()
             c.moveTo(-6, chooseFunction(0, controls))
             for (let t = 0; t < config.chartLength * config.chartScale; t += config.chartIncrement) {
