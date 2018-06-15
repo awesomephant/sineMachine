@@ -41,8 +41,8 @@ board = new five.Board();
 var config = {
     maxRPM: 50,
     scale: 1,
-    waitTime: 500,
-    stepperDistance: 2620,
+    waitTime: 100,
+    stepperDistance: 2642,
     stepperResolution: 200, // Full steps per revolution
     microstepResolution: 1,
     wheelDiameter: 3, //Stepper wheel radius in mm
